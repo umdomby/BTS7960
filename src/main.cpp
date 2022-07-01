@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#define RPWM 5
+#define RPWM D5
 // #define LPWM 6
 // #define REN 8
 // #define LEN 9
