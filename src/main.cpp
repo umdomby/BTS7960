@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
 #define RPWM 5
-#define LPWM 6
-#define REN 8
-#define LEN 9
+// #define LPWM 6
+// #define REN 8
+// #define LEN 9
 
 
 int pot;
@@ -13,20 +13,20 @@ int out2;
 void setup() {
   Serial.begin(9600);
   pinMode(RPWM,OUTPUT);
-  pinMode(LPWM,OUTPUT);
-  pinMode(LEN,OUTPUT);
-  pinMode(REN,OUTPUT);
-  digitalWrite(REN,HIGH);
-  digitalWrite(LEN,HIGH);
+  // pinMode(LPWM,OUTPUT);
+  // pinMode(LEN,OUTPUT);
+  // pinMode(REN,OUTPUT);
+  // digitalWrite(REN,HIGH);
+  // digitalWrite(LEN,HIGH);
 
 }
  
  
 void loop() {
 
-  analogWrite(LPWM, 0);
+  analogWrite(RPWM, 0);
 
-  analogWrite(RPWM,0);//NOOOOOOOOOOOO!!!
+  //analogWrite(LPWM,0);//NOOOOOOOOOOOO!!!
   
   //pot=analogRead(A0);
 
