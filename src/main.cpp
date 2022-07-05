@@ -61,12 +61,15 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         messageX = doc["messageX"];
         messageY = doc["messageY"];
 
-        Serial.printf("messageX = %s\n", String((messageX*speed)+speedStart));
-        Serial.printf("messageY = %s\n", String((messageY*speed)+speedStart));
+        messageX = messageX*speed;
+        messageY = messageY*speed;
+
+        Serial.printf("messageXjoyStick = %s\n", String((messageX)+speedStart));
+        Serial.printf("messageYjoyStick = %s\n", String((messageY)+speedStart));
 
         doc2["method"] = "messages";
-        doc2["messageX"] = messageX;
-        doc2["messageY"] = messageY;
+        doc2["messageX"] = messageX*speed;
+        doc2["messageY"] = messageY*speed;
         String output = doc2.as<String>();
         client.send(output);
 
@@ -85,6 +88,17 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         //     analogWrite(RPWM, message2);
         //     stop = 0;
         // }
+     }
+    if(String(method) == "messagesY"){
+        stop = doc["stop"];
+        accel = doc["accel"];
+        messageY = doc["messageY"];
+        Serial.printf("messageYslider = %s\n", String((messageY)+speedStart));
+
+        doc2["method"] = "messagesY";
+        doc2["messageY"] = messageY;
+        String output = doc2.as<String>();
+        client.send(output);
      }
 
 }
@@ -194,8 +208,8 @@ void loop(){
 
       doc2["method"] = "messages";
       doc2["id"] = "123";
-      doc2["messageX"] = "millis";
-      doc2["messageY"] = String(lastUpdate15);
+    //   doc2["messageX"] = "millis";
+    //   doc2["messageY"] = String(lastUpdate15);
       output = doc2.as<String>();
       client.send(output);
 
@@ -204,7 +218,7 @@ void loop(){
 
 
   if(messageY > 0){
-    analogWrite(RPWM, (messageY*speed)+speedStart);
+    analogWrite(RPWM, (messageY)+speedStart);
   }
 
     if(messageY == 0){
