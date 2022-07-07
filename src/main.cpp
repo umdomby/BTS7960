@@ -61,17 +61,15 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         stop = doc["stop"];
         accel = doc["accel"];
 
-        messageL = doc["messageL"];
-        messageR = doc["messageR"];
-
-        Serial.printf("messageLjoyStick = %s\n", String((messageL)+speedStart));
-        Serial.printf("messageRjoyStick = %s\n", String((messageR)+speedStart));
-
-        doc2["method"] = "messages";
-        doc2["messageL"] = messageL;
-        doc2["messageR"] = messageR;
-        String output = doc2.as<String>();
-        client.send(output);
+        // messageL = doc["messageL"];
+        // messageR = doc["messageR"];
+        // Serial.printf("messageLjoyStick = %s\n", String((messageL)+speedStart));
+        // Serial.printf("messageRjoyStick = %s\n", String((messageR)+speedStart));
+        // doc2["method"] = "messages";
+        // doc2["messageL"] = messageL;
+        // doc2["messageR"] = messageR;
+        // String output = doc2.as<String>();
+        // client.send(output);
 
 
         // message = message * 27;
@@ -95,10 +93,10 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         messageL = doc["messageL"];
         //messageR = doc["messageR"];
         Serial.printf("messageL = %s\n", String(messageL));
-        //Serial.printf("messageR = %s\n", String(messageR));
-        doc2["method"] = "messagesLR";
+        Serial.printf("messageR = %s\n", String(messageR));
+        doc2["method"] = "messagesL";
         doc2["messageL"] = messageL;
-        //doc2["messageR"] = messageR;
+        doc2["messageR"] = messageR;
         String output = doc2.as<String>();
         client.send(output);
     }
@@ -108,10 +106,10 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         accel = doc["accel"];
         //messageL = doc["messageL"];
         messageR = doc["messageR"];
-        //Serial.printf("messageL = %s\n", String(messageL));
+        Serial.printf("messageL = %s\n", String(messageL));
         Serial.printf("messageR = %s\n", String(messageR));
         doc2["method"] = "messagesR";
-        //doc2["messageL"] = messageL;
+        doc2["messageL"] = messageL;
         doc2["messageR"] = messageR;
         String output = doc2.as<String>();
         client.send(output);
