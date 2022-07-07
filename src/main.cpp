@@ -207,8 +207,8 @@ void loop(){
 
         doc2["method"] = "messages";
         doc2["id"] = "123";
-        //   doc2["messageL"] = "millis";
-        //   doc2["messageR"] = String(lastUpdate15);
+        doc2["messageL"] = String(messageL);
+        doc2["messageR"] = String(messageR);
         output = doc2.as<String>();
         client.send(output);
 
