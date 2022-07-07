@@ -2,7 +2,6 @@
 //BTS7960
 #define RPWM D5
 #define LPWM D6
-#define speed 40
 #define speedStart 0
 #include <ArduinoWebsockets.h>
 #include <ESP8266WiFi.h>
@@ -33,8 +32,8 @@ StaticJsonDocument<512> doc2;
 int stop = 0;
 const char* method = "";
 const char* username = "";
-float messageX = 0;
-float messageY = 0;
+float messageL = 0;
+float messageR = 0;
 // int posMessage = 90;
 // int posMessage2 = 90;
 int accel = 1;
@@ -57,23 +56,20 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
     if(String(method) == "connection"){
         Serial.printf("[WSc] WStype_CONNECTED\n");
     }
-        
+
     if(String(method) == "messages"){
         stop = doc["stop"];
         accel = doc["accel"];
-        
-        messageX = doc["messageX"];
-        messageY = doc["messageY"];
 
-        messageX = messageX*speed;
-        messageY = messageY*speed;
+        messageL = doc["messageL"];
+        messageR = doc["messageR"];
 
-        Serial.printf("messageXjoyStick = %s\n", String((messageX)+speedStart));
-        Serial.printf("messageYjoyStick = %s\n", String((messageY)+speedStart));
+        Serial.printf("messageLjoyStick = %s\n", String((messageL)+speedStart));
+        Serial.printf("messageRjoyStick = %s\n", String((messageR)+speedStart));
 
         doc2["method"] = "messages";
-        doc2["messageX"] = messageX*speed;
-        doc2["messageY"] = messageY*speed;
+        doc2["messageL"] = messageL;
+        doc2["messageR"] = messageR;
         String output = doc2.as<String>();
         client.send(output);
 
@@ -92,18 +88,20 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         //     analogWrite(RPWM, message2);
         //     stop = 0;
         // }
-     }
-    if(String(method) == "messagesY"){
+    }
+    if(String(method) == "messagesLR"){
         stop = doc["stop"];
         accel = doc["accel"];
-        messageY = doc["messageY"];
-        Serial.printf("messageYslider = %s\n", String((messageY)+speedStart));
-
-        doc2["method"] = "messagesY";
-        doc2["messageY"] = messageY;
+        messageL = doc["messageL"];
+        messageR = doc["messageR"];
+        Serial.printf("messageL = %s\n", String(messageL));
+        Serial.printf("messageR = %s\n", String(messageR));
+        doc2["method"] = "messagesLR";
+        doc2["messageL"] = messageL;
+        doc2["messageR"] = messageR;
         String output = doc2.as<String>();
         client.send(output);
-     }
+    }
 
 }
 
@@ -177,71 +175,73 @@ void setup() {
 // };
 
 void loop(){
-   
-  client.poll();
 
-  if (WiFi.status() != WL_CONNECTED) {
-      Serial.println("WiFi.reconnect()-----------------------------------");
-      Serial.println("WiFi.reconnect()-----------------------------------");
-      //WiFi.disconnect();
-      //WiFi.reconnect();
-      ESP.restart();
-      socketSetup();
-      // ESP.reset(); 
-      // WiFi.disconnect();
-      // WiFi.reconnect();
-  };
+    client.poll();
 
-  if (lastUpdate + messageInterval < millis()){
-      if (connected == false){
-          Serial.printf(", connected =================================== %s\n", String(connected));
-          socketSetup(); 
-      };
-      lastUpdate = millis();
-  };
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("WiFi.reconnect()-----------------------------------");
+        Serial.println("WiFi.reconnect()-----------------------------------");
+        //WiFi.disconnect();
+        //WiFi.reconnect();
+        ESP.restart();
+        socketSetup();
+        // ESP.reset(); 
+        // WiFi.disconnect();
+        // WiFi.reconnect();
+    };
 
-  if (lastUpdate15 + 10000 < millis()){
-      Serial.printf("millis() = %s", String(millis()));
-      Serial.printf(", WiFi.status() = %s", String(WiFi.status()));
-      Serial.printf(", WL_CONNECTED = %s", String(WL_CONNECTED));
-      Serial.printf(", connected = %s\n", String(connected));
-  
+    if (lastUpdate + messageInterval < millis()){
+        if (connected == false){
+            Serial.printf(", connected =================================== %s\n", String(connected));
+            socketSetup();
+        };
+        lastUpdate = millis();
+    };
 
-      doc2["method"] = "messages";
-      doc2["id"] = "123";
-    //   doc2["messageX"] = "millis";
-    //   doc2["messageY"] = String(lastUpdate15);
-      output = doc2.as<String>();
-      client.send(output);
-
-      lastUpdate15 = millis();
-  };
+    if (lastUpdate15 + 10000 < millis()){
+        Serial.printf("millis() = %s", String(millis()));
+        Serial.printf(", WiFi.status() = %s", String(WiFi.status()));
+        Serial.printf(", WL_CONNECTED = %s", String(WL_CONNECTED));
+        Serial.printf(", connected = %s\n", String(connected));
 
 
-  if(messageY > 0){
-    analogWrite(RPWM, (messageY)+speedStart);
-  }
+        doc2["method"] = "messages";
+        doc2["id"] = "123";
+        //   doc2["messageL"] = "millis";
+        //   doc2["messageR"] = String(lastUpdate15);
+        output = doc2.as<String>();
+        client.send(output);
 
-  if(messageY == 0){
-    analogWrite(RPWM, 0);
-  }
+        lastUpdate15 = millis();
+    };
 
-  if(messageY > 0){
-    analogWrite(LPWM, (messageY)+speedStart);
-  }
 
-  if(messageY == 0){
-    analogWrite(LPWM, 0);
-  }
+    if(messageL > 0){
+        analogWrite(LPWM, (messageL)+speedStart);
+    }
 
-  // if(message2 > posMessage2){
-  //   analogWrite(RPWM, posMessage2);
+    if(messageL == 0){
+        analogWrite(LPWM, 0);
+    }
 
-  //     posMessage2++;                 
-  // }
-  // else if(message2 < posMessage2){
-  //     analogWrite(RPWM, posMessage2);   
-  //     posMessage2--; 
-  // }
+    if(messageR > 0){
+        analogWrite(RPWM, (messageR)+speedStart);
+    }
+
+    if(messageR == 0){
+        analogWrite(RPWM, 0);
+    }
+
+
+
+    // if(message2 > posMessage2){
+    //   analogWrite(RPWM, posMessage2);
+
+    //     posMessage2++;                 
+    // }
+    // else if(message2 < posMessage2){
+    //     analogWrite(RPWM, posMessage2);   
+    //     posMessage2--; 
+    // }
 
 }
