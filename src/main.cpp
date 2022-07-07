@@ -89,15 +89,29 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         //     stop = 0;
         // }
     }
-    if(String(method) == "messagesLR"){
+    if(String(method) == "messagesL"){
         stop = doc["stop"];
         accel = doc["accel"];
         messageL = doc["messageL"];
-        messageR = doc["messageR"];
+        //messageR = doc["messageR"];
         Serial.printf("messageL = %s\n", String(messageL));
-        Serial.printf("messageR = %s\n", String(messageR));
+        //Serial.printf("messageR = %s\n", String(messageR));
         doc2["method"] = "messagesLR";
         doc2["messageL"] = messageL;
+        //doc2["messageR"] = messageR;
+        String output = doc2.as<String>();
+        client.send(output);
+    }
+
+        if(String(method) == "messagesR"){
+        stop = doc["stop"];
+        accel = doc["accel"];
+        //messageL = doc["messageL"];
+        messageR = doc["messageR"];
+        //Serial.printf("messageL = %s\n", String(messageL));
+        Serial.printf("messageR = %s\n", String(messageR));
+        doc2["method"] = "messagesR";
+        //doc2["messageL"] = messageL;
         doc2["messageR"] = messageR;
         String output = doc2.as<String>();
         client.send(output);
