@@ -1,10 +1,14 @@
+#include <Arduino.h>
 //BTS7960
 #define RPWM D5
+#define LPWM D6
 #define speed 40
-#define speedStart 35
+#define speedStart 0
 #include <ArduinoWebsockets.h>
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
+
+
 
 unsigned long messageInterval = 2000;
 bool connected = false;
@@ -121,13 +125,10 @@ void onEventsCallback(WebsocketsEvent event, String data) {
 void socketSetup(){
     // run callback when messages are received
     client.onMessage(onMessageCallback);
-    
     // run callback when events are occuring
     client.onEvent(onEventsCallback);
-
     // Connect to server
     client.connect(websockets_server_host, websockets_server_port, "/");
-
     // Send a message
     //client.send("Hello Server");
     doc2["method"] = "connection";
@@ -140,6 +141,12 @@ void socketSetup(){
 };
 
 void setup() {
+    //BTS7960
+    pinMode(RPWM,OUTPUT);
+    analogWrite(RPWM, 0);
+    pinMode(LPWM,OUTPUT);
+    analogWrite(LPWM, 0);
+
     Serial.begin(115200);
     // Connect to wifi
     WiFi.begin(ssid, password);
@@ -152,9 +159,6 @@ void setup() {
 
     socketSetup();
 
-    //BTS7960
-    pinMode(RPWM,OUTPUT);
-    analogWrite(RPWM, 0);
     // message = message * 90;
     // message2 = message2 * 90;
 
@@ -175,9 +179,6 @@ void setup() {
 void loop(){
    
   client.poll();
-
-  //BTS7960
-  //analogWrite(RPWM, 0);
 
   if (WiFi.status() != WL_CONNECTED) {
       Serial.println("WiFi.reconnect()-----------------------------------");
@@ -221,8 +222,16 @@ void loop(){
     analogWrite(RPWM, (messageY)+speedStart);
   }
 
-    if(messageY == 0){
+  if(messageY == 0){
     analogWrite(RPWM, 0);
+  }
+
+  if(messageY > 0){
+    analogWrite(LPWM, (messageY)+speedStart);
+  }
+
+  if(messageY == 0){
+    analogWrite(LPWM, 0);
   }
 
   // if(message2 > posMessage2){
