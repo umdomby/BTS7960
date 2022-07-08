@@ -1,5 +1,6 @@
 #include <Arduino.h>
 //BTS7960
+#define ONOFF D0
 #define RPWM D5
 #define LPWM D6
 #define speedStart 0
@@ -32,6 +33,7 @@ StaticJsonDocument<512> doc2;
 int stop = 0;
 const char* method = "";
 const char* username = "";
+boolean messageOnOff = false;
 float messageL = 0;
 float messageR = 0;
 // int posMessage = 90;
@@ -101,7 +103,7 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         client.send(output);
     }
 
-        if(String(method) == "messagesR"){
+    if(String(method) == "messagesR"){
         stop = doc["stop"];
         accel = doc["accel"];
         //messageL = doc["messageL"];
@@ -113,6 +115,16 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         doc2["messageR"] = messageR;
         String output = doc2.as<String>();
         client.send(output);
+    }
+
+    if(String(method) == "messagesOnOff"){
+        messageOnOff = doc["messageOnOff"];
+        doc2["method"] = "messagesOnOff";
+        doc2["messagesOnOff"] = messageOnOff;
+        Serial.printf("messageOnOff = %s\n", String(messageOnOff));
+        String output = doc2.as<String>();
+        client.send(output);
+        digitalWrite(ONOFF, !messageOnOff);
     }
 
 }
@@ -156,6 +168,8 @@ void setup() {
     analogWrite(RPWM, 0);
     pinMode(LPWM,OUTPUT);
     analogWrite(LPWM, 0);
+    pinMode(ONOFF, OUTPUT);
+    digitalWrite(ONOFF, HIGH);
 
     Serial.begin(115200);
     // Connect to wifi
@@ -243,7 +257,6 @@ void loop(){
     if(messageR == 0){
         analogWrite(RPWM, 0);
     }
-
 
 
     // if(message2 > posMessage2){
