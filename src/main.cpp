@@ -1,5 +1,8 @@
+const char* ssid = "Robolab";
+const char* password = "wifi123123123";
+const char* idSocket = "123";
+
 #include <Arduino.h>
-//BTS7960
 #define ONOFF D0
 #define RPWM D5
 #define LPWM D6
@@ -9,11 +12,8 @@
 #include <ArduinoJson.h>
 
 
-
 unsigned long messageInterval = 2000;
 bool connected = false;
-const char* ssid = "Robolab";
-const char* password = "wifi123123123";
 //const char* websockets_server_host = "servicerobot.pro"; // Enter server adress
 const char* websockets_server_host = "192.168.0.101"; // Enter server adress
 const uint16_t websockets_server_port = 8081; // Enter server port
@@ -155,7 +155,7 @@ void socketSetup(){
     //client.send("Hello Server");
     doc2["method"] = "connection";
     //doc2["id"] = "b078167f69934795e54a54dc831acea8|a46d12213abfad52db817c17e1fec1ae";
-    doc2["id"] = "123";
+    doc2["id"] = idSocket;
     output = doc2.as<String>();
     client.send(output);
     // Send a ping
@@ -232,7 +232,7 @@ void loop(){
 
 
         doc2["method"] = "messages";
-        doc2["id"] = "123";
+        doc2["id"] = idSocket;
         doc2["messageL"] = String(messageL);
         doc2["messageR"] = String(messageR);
         output = doc2.as<String>();
