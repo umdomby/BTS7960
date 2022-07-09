@@ -9,7 +9,6 @@ const char* idSocket = "123";
 #define FBR D3
 #define RPWM D5
 #define LPWM D6
-#define speedStart 0
 #include <ArduinoWebsockets.h>
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
@@ -71,8 +70,6 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
 
         // messageL = doc["messageL"];
         // messageR = doc["messageR"];
-        // Serial.printf("messageLjoyStick = %s\n", String((messageL)+speedStart));
-        // Serial.printf("messageRjoyStick = %s\n", String((messageR)+speedStart));
         // doc2["method"] = "messages";
         // doc2["messageL"] = messageL;
         // doc2["messageR"] = messageR;
@@ -99,6 +96,9 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         stop = doc["stop"];
         accel = doc["accel"];
         messageL = doc["messageL"];
+        if(messageL < 0){
+            messageL *= -1;
+        }
         //messageR = doc["messageR"];
         Serial.printf("messageL = %s\n", String(messageL));
         Serial.printf("messageR = %s\n", String(messageR));
@@ -114,6 +114,9 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         accel = doc["accel"];
         //messageL = doc["messageL"];
         messageR = doc["messageR"];
+        if(messageR < 0){
+            messageR *= -1;
+        }
         Serial.printf("messageL = %s\n", String(messageL));
         Serial.printf("messageR = %s\n", String(messageR));
         doc2["method"] = "messagesR";
@@ -293,7 +296,7 @@ void loop(){
     };
 
     if(messageL > 0){
-        analogWrite(LPWM, (messageL)+speedStart);
+        analogWrite(LPWM, messageL);
     }
 
     if(messageL == 0){
@@ -301,7 +304,7 @@ void loop(){
     }
 
     if(messageR > 0){
-        analogWrite(RPWM, (messageR)+speedStart);
+        analogWrite(RPWM, messageR);
     }
 
     if(messageR == 0){
