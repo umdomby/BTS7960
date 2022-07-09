@@ -5,6 +5,8 @@ const char* idSocket = "123";
 #include <Arduino.h>
 #define ONOFF D0
 #define STOP D1
+#define FBL D2
+#define FBR D3
 #define RPWM D5
 #define LPWM D6
 #define speedStart 0
@@ -36,6 +38,8 @@ const char* method = "";
 const char* username = "";
 boolean messageOnOff = true;
 boolean messageStop = true;
+boolean messageFBL = true;
+boolean messageFBR = true;
 float messageL = 0;
 float messageR = 0;
 // int posMessage = 90;
@@ -126,7 +130,7 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         Serial.printf("messageOnOff = %s\n", String(messageOnOff));
         String output = doc2.as<String>();
         client.send(output);
-        digitalWrite(ONOFF, !messageOnOff);
+        digitalWrite(ONOFF, messageOnOff);
     }
     if(String(method) == "messagesStop"){
         messageStop = doc["messageStop"];
@@ -136,6 +140,24 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         String output = doc2.as<String>();
         client.send(output);
         digitalWrite(STOP, messageStop);
+    }
+    if(String(method) == "messagesFBL"){
+        messageFBL = doc["messageFBL"];
+        doc2["method"] = "messagesFBL";
+        doc2["messageFBL"] = messageFBL;
+        Serial.printf("messageFBL = %s\n", String(messageFBL));
+        String output = doc2.as<String>();
+        client.send(output);
+        digitalWrite(FBL, messageFBL);
+    }
+        if(String(method) == "messagesFBR"){
+        messageFBR = doc["messageFBR"];
+        doc2["method"] = "messagesFBR";
+        doc2["messageFBR"] = messageFBR;
+        Serial.printf("messageFBR = %s\n", String(messageFBR));
+        String output = doc2.as<String>();
+        client.send(output);
+        digitalWrite(FBR, messageFBR);
     }
 
 }
@@ -179,6 +201,12 @@ void setup() {
     analogWrite(RPWM, 0);
     pinMode(LPWM,OUTPUT);
     analogWrite(LPWM, 0);
+
+    pinMode(FBL,OUTPUT);
+    digitalWrite(FBL, HIGH);
+    pinMode(FBR,OUTPUT);
+    digitalWrite(FBR, HIGH);
+
     pinMode(ONOFF, OUTPUT);
     digitalWrite(ONOFF, HIGH);
     pinMode(STOP, OUTPUT);
