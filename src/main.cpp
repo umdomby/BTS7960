@@ -281,6 +281,14 @@ void loop(){
         output = doc2.as<String>();
         client.send(output);
 
+        doc2["method"] = "messagesFBL";
+        doc2["messageFBL"] = messageFBL;
+        client.send(doc2.as<String>());
+
+        doc2["method"] = "messagesFBR";
+        doc2["messageFBR"] = messageFBR;
+        client.send(doc2.as<String>());
+
         lastUpdate15 = millis();
     };
 
