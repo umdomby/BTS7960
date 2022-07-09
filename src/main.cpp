@@ -97,8 +97,8 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         accel = doc["accel"];
         messageL = doc["messageL"];
         if(messageL < 0){
-            messageL *= -1;
-        }
+            messageL = (messageL - 80 ) * -1;
+        }else{messageL = messageL + 80;}
         //messageR = doc["messageR"];
         Serial.printf("messageL = %s\n", String(messageL));
         Serial.printf("messageR = %s\n", String(messageR));
@@ -115,8 +115,8 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         //messageL = doc["messageL"];
         messageR = doc["messageR"];
         if(messageR < 0){
-            messageR *= -1;
-        }
+            messageR = (messageR - 80) * -1;
+        }else{messageR = messageR + 80;}
         Serial.printf("messageL = %s\n", String(messageL));
         Serial.printf("messageR = %s\n", String(messageR));
         doc2["method"] = "messagesR";
@@ -290,6 +290,10 @@ void loop(){
 
         doc2["method"] = "messagesFBR";
         doc2["messageFBR"] = messageFBR;
+        client.send(doc2.as<String>());
+
+        doc2["method"] = "messagesOnOff";
+        doc2["messageOnOff"] = messageOnOff;
         client.send(doc2.as<String>());
 
         lastUpdate15 = millis();
