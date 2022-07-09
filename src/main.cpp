@@ -4,6 +4,7 @@ const char* idSocket = "123";
 
 #include <Arduino.h>
 #define ONOFF D0
+#define STOP D1
 #define RPWM D5
 #define LPWM D6
 #define speedStart 0
@@ -33,7 +34,8 @@ StaticJsonDocument<512> doc2;
 int stop = 0;
 const char* method = "";
 const char* username = "";
-boolean messageOnOff = false;
+boolean messageOnOff = true;
+boolean messageStop = true;
 float messageL = 0;
 float messageR = 0;
 // int posMessage = 90;
@@ -120,11 +122,20 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
     if(String(method) == "messagesOnOff"){
         messageOnOff = doc["messageOnOff"];
         doc2["method"] = "messagesOnOff";
-        doc2["messagesOnOff"] = messageOnOff;
+        doc2["messageOnOff"] = messageOnOff;
         Serial.printf("messageOnOff = %s\n", String(messageOnOff));
         String output = doc2.as<String>();
         client.send(output);
         digitalWrite(ONOFF, !messageOnOff);
+    }
+    if(String(method) == "messagesStop"){
+        messageStop = doc["messageStop"];
+        doc2["method"] = "messagesStop";
+        doc2["messageStop"] = messageStop;
+        Serial.printf("messageStop = %s\n", String(messageStop));
+        String output = doc2.as<String>();
+        client.send(output);
+        digitalWrite(STOP, messageStop);
     }
 
 }
@@ -170,6 +181,8 @@ void setup() {
     analogWrite(LPWM, 0);
     pinMode(ONOFF, OUTPUT);
     digitalWrite(ONOFF, HIGH);
+    pinMode(STOP, OUTPUT);
+    digitalWrite(STOP, messageStop);
 
     Serial.begin(115200);
     // Connect to wifi
@@ -216,6 +229,8 @@ void loop(){
         // WiFi.reconnect();
     };
 
+    digitalWrite(STOP, messageStop);
+
     if (lastUpdate + messageInterval < millis()){
         if (connected == false){
             Serial.printf(", connected =================================== %s\n", String(connected));
@@ -240,7 +255,6 @@ void loop(){
 
         lastUpdate15 = millis();
     };
-
 
     if(messageL > 0){
         analogWrite(LPWM, (messageL)+speedStart);
