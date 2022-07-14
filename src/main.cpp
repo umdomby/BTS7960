@@ -1,6 +1,7 @@
 const char* ssid = "Robolab";
 const char* password = "wifi123123123";
 const char* idSocket = "123";
+int speed = 75;
 
 #include <Arduino.h>
 #define ONOFF D0
@@ -16,8 +17,8 @@ const char* idSocket = "123";
 
 unsigned long messageInterval = 2000;
 bool connected = false;
-//const char* websockets_server_host = "servicerobot.pro"; // Enter server adress
-const char* websockets_server_host = "192.168.0.101"; // Enter server adress
+const char* websockets_server_host = "servicerobot.pro"; // Enter server adress
+//const char* websockets_server_host = "192.168.0.101"; // Enter server adress
 const uint16_t websockets_server_port = 8081; // Enter server port
 
 using namespace websockets;
@@ -97,8 +98,8 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         accel = doc["accel"];
         messageL = doc["messageL"];
         if(messageL < 0){
-            messageL = (messageL - 80 ) * -1;
-        }else{messageL = messageL + 80;}
+            messageL = (messageL * 15 - speed) * -1;
+        }else{messageL = messageL * 15 + speed;}
         //messageR = doc["messageR"];
         Serial.printf("messageL = %s\n", String(messageL));
         Serial.printf("messageR = %s\n", String(messageR));
@@ -115,8 +116,8 @@ void onMessageCallback(WebsocketsMessage messageSocket) {
         //messageL = doc["messageL"];
         messageR = doc["messageR"];
         if(messageR < 0){
-            messageR = (messageR - 80) * -1;
-        }else{messageR = messageR + 80;}
+            messageR = (messageR * 15 - speed) * -1;
+        }else{messageR = messageR * 15 + speed;}
         Serial.printf("messageL = %s\n", String(messageL));
         Serial.printf("messageR = %s\n", String(messageR));
         doc2["method"] = "messagesR";
